@@ -273,7 +273,7 @@ static Module* createRuntimeModule(LLVMContext& context)
     std::string module_filename = std::string(R_Home) + "/jit/RuntimeImpl.bc";
 
     llvm::SMDiagnostic err;
-    Module* runtime_module = llvm::ParseIRFile(module_filename, err, context);
+    Module* runtime_module = llvm::parseIRFile(module_filename, err, context).get();
     if (!runtime_module) {
 	// TODO(kmillar): better error handling
 	printf("parse failed\n");

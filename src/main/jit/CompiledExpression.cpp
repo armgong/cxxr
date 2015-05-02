@@ -61,9 +61,8 @@ CompiledExpression::CompiledExpression(const Closure* closure)
     // separate invocation of the JIT compiler uses its own module.
     llvm::LLVMContext& context = llvm::getGlobalContext();
     Module* module = Runtime::createModule(context);
-
+		
     module->setTargetTriple(llvm::sys::getProcessTriple());
-
     llvm::TargetOptions options;
     // TODO(kmillar): set options dynamically.
     options.JITEmitDebugInfo = true;
@@ -71,9 +70,9 @@ CompiledExpression::CompiledExpression(const Closure* closure)
     options.EnableFastISel = true;
 
     MCJITMemoryManager* memory_manager = new MCJITMemoryManager(module);
-    m_engine.reset(llvm::EngineBuilder(module)
-		   .setUseMCJIT(true)
-		   .setMCJITMemoryManager(memory_manager)
+    m_engine.reset(llvm::EngineBuilder(std::unique_ptr<Module>(module))
+		   //.setUseMCJIT(true)
+		   .setMCJITMemoryManager(std::unique_ptr<llvm::RTDyldMemoryManager>(memory_manager))
 		   .setOptLevel(llvm::CodeGenOpt::None)
                    .setTargetOptions(options)
                    .setMCPU(llvm::sys::getHostCPUName())
